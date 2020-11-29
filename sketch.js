@@ -13,7 +13,13 @@ function setup() {
   createCanvas(800,400);
   engine = Engine.create();
   world = engine.world
-  ball=new Box(645,145,15,15)
+  var options = {
+    'restitution':0.8,
+    'friction':1.0,
+    'density':1.0
+  }
+  ball=  Bodies.polygon(100,100,6,2,options)
+  World.add(world,ball)
   box1 = new Box (300,300,25,25)
   box2 = new Box (325,300,25,25)
   box3 = new Box (350,300,25,25)
@@ -27,25 +33,26 @@ function setup() {
   platform = new Ground(300,325,300,10)
 
   // create a sling object from SlingShot class and pass the ball.body and ,{x:645,y:145} as parameter
-  
+  slingshot = new SlingShot(ball,{x:200,y:100}); 
 
 }
 
 function draw() {
-  background(0);  
+  background(255);  
   Engine.update(engine);
   box1.display();
   box4.display();  box5.display();
-  box3.display();  box6.display();  box9.display(); ball.display();
+  box3.display();  box6.display();  box9.display(); 
   box2.display();  box7.display();  box8.display();  box10.display();
   platform.display();
   slingshot.display()
-  
+  fill("blue")
+  polygon(ball.position.x,ball.position.y,2,6)
     drawSprites();
 }
 function mouseDragged(){
   if(gameState!=="launch"){
-    Matter.Body.setPosition(ball.body,{x:mouseX,y:mouseY})
+    Matter.Body.setPosition(ball,{x:mouseX,y:mouseY})
 }
 }
 
@@ -57,7 +64,16 @@ function mouseReleased(){
 
 function keyPressed(){
   if(keyCode === 32){
-    slingshot = new Slingshot(ball.body,{x:200,y:100});
-      gameState = "onSling"
+   gameState = "onSling"
   }
+}
+function polygon(x, y, radius, npoints) {
+  let angle = TWO_PI / npoints;
+  beginShape();
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = x + cos(a) * radius;
+    let sy = y + sin(a) * radius;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
 }
